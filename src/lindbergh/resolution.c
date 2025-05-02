@@ -2055,6 +2055,49 @@ int initResolutionPatches()
         replaceCallAtAddress(0x081dd00a, id4DrawText);
     }
     break;
+    case INITIALD_4_REVD_SERVERBOX:
+    {
+        if (gWidth == 640 && gHeight == 480)
+        {
+            if (getConfig()->boostRenderRes)
+            {
+                setVariable(0x08248f47, gWidth); // Set ResX
+                setVariable(0x08249007, gWidth); // Set ResX
+                setVariable(0x082490c7, gWidth); // Set ResX
+                setVariable(0x08249126, gWidth); // Set ResX
+            }
+            break;
+        }
+        setVariable(0x0835c55d, 0x0000f0e9);          // Force set resolution
+        setVariable(0x0835c653, gWidth);              // Set ResX
+        setVariable(0x0835c658, gHeight);             // Set ResY
+        // Renderbuffer Resolution
+        setVariable(0x08248f47, gWidth);  // Set ResX
+        setVariable(0x08248f3f, gHeight); // Set ResY
+        setVariable(0x08249007, gWidth);  // Set ResX
+        setVariable(0x08248fff, gHeight); // Set ResY
+        setVariable(0x082490c7, gWidth);  // Set ResX
+        setVariable(0x082490bf, gHeight); // Set ResY
+        setVariable(0x08249126, gWidth);  // Set ResX
+        setVariable(0x0824911e, gHeight); // Set ResY
+        setVariable(0x082498b7, gWidth);  // Set ResX
+        setVariable(0x082498af, gHeight); // Set ResY
+        setVariable(0x08249942, gWidth);  // Set ResX
+        setVariable(0x0824993a, gHeight); // Set ResY
+
+        idDisplayTextureCAVEAddress = (void *)0x0831bf90 + 5;
+        detourFunction(0x0831bf90, idDisplayTexture);
+        // FSAA
+        patchMemory(0x0853edc2, "9090");
+        patchMemory(0x0855e419, "01"); // FSAA Enabled
+        setVariable(0x089cff30, 1);    // FSAA Quality
+        // Ballon fix
+        idDrawBallonCAVEAddress = (void *)0x081dbaae + 6;
+        id4DrawTextAddress = (void *)0x081dcc14;
+        detourFunction(0x081dbaae, idDrawBallon);
+        replaceCallAtAddress(0x081dd00a, id4DrawText);
+    }
+    break;
     case INITIALD_4_REVG:
     {
         if (gWidth == 1360 && gHeight == 768)

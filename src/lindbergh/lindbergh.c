@@ -70,6 +70,7 @@ uint32_t cleanElfCRC32[] = {
     0x43582D48, // DVP-0019B | id4.elf
     0x2D2A18C1, // DVP-0019C | id4.elf
     0x9BFD0D98, // DVP-0019D | id4.elf
+    0xB84D2D0E, // DVP-0019D | id4.elf (ServerBox)
     0x9CF9BBCC, // DVP-0019G | id4.elf
     0xFA0F6AB0, // DVP-0027A | apacheM.elf
     0x5A7F315E, // DVP-0027A | apachetestM.elf

@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <dlfcn.h>
 #include <pthread.h>
@@ -498,6 +499,73 @@ void FGAPIENTRY glutSolidCube(double dSize)
     {
         void FGAPIENTRY (*_glutSolidCube)(double dSize) = dlsym(RTLD_NEXT, "glutSolidCube");
         _glutSolidCube(dSize);
+        return;
+    }
+    return;
+}
+
+int getFontWidthByID(void* font){
+    // from https://www.opengl.org/resources/libraries/glut/spec3/node76.html
+    int width = 0;
+    if( font == GLUT_BITMAP_8_BY_13        )
+    {
+        printf("Got font GLUT_BITMAP_8_BY_13\n");
+        width = 13;
+    }
+    else if( font == GLUT_BITMAP_9_BY_15        )
+    {
+        printf("Got font GLUT_BITMAP_9_BY_15\n");
+        width = 15;
+    }
+    else if( font == GLUT_BITMAP_HELVETICA_10   )
+    {
+        printf("Got font GLUT_BITMAP_HELVETICA_10\n");
+        width = 10;
+    }
+    else if( font == GLUT_BITMAP_HELVETICA_12   )
+    {
+        printf("Got font GLUT_BITMAP_HELVETICA_12\n");
+        width = 12;
+    }
+    else if( font == GLUT_BITMAP_HELVETICA_18   )
+    {
+        printf("Got font GLUT_BITMAP_HELVETICA_18\n");
+        width = 18;
+    }
+    else if( font == GLUT_BITMAP_TIMES_ROMAN_10 )
+    {
+        printf("Got font GLUT_BITMAP_TIMES_ROMAN_10\n");
+        width = 10;
+    }
+    else if( font == GLUT_BITMAP_TIMES_ROMAN_24 )
+    {
+        printf("Got font GLUT_BITMAP_TIMES_ROMAN_24\n");
+        width = 24;
+    }
+    else
+    {
+        printf( "font %p not found\n", font );
+        return 0;
+    }
+    return width;
+}
+
+int FGAPIENTRY glutBitmapWidth(void* font, int character)
+{
+    if (getConfig()->noSDL)
+    {
+        int FGAPIENTRY (*_glutBitmapWidth)(void* font, int character) = dlsym(RTLD_NEXT, "glutBitmapWidth");
+        return _glutBitmapWidth(font, character);
+    }
+    return getFontWidthByID(font);
+}
+
+void FGAPIENTRY glutBitmapCharacter(void *font, int character)
+{
+    if (getConfig()->noSDL)
+    {
+        void FGAPIENTRY (*_glutBitmapCharacter)(void *font, int character) = dlsym(RTLD_NEXT, "glutBitmapCharacter");
+        _glutBitmapCharacter(font, character);
         return;
     }
     return;

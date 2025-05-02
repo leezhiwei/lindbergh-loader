@@ -394,6 +394,21 @@ static int detectGame(uint32_t elf_crc)
     }
     break;
 
+    case INITIALD_4_REVD_SERVERBOX:
+    {
+        config.gameTitle = "Initial D Arcade Stage 4 Rev D (Server Box)";
+        config.gameID = "SBML";
+        config.gameDVP = "DVP-0019D";
+        config.gameReleaseYear = "2007";
+        config.gameNativeResolutions = "640x480";
+        config.gameStatus = NOT_WORKING;
+        config.gameType = DRIVING;
+        config.width = 640;
+        config.height = 480;
+        return 0;
+    }
+    break;
+
     case INITIALD_4_REVG:
     {
         config.gameTitle = "Initial D Arcade Stage 4 Rev G";
@@ -1018,7 +1033,7 @@ static int detectGame(uint32_t elf_crc)
     break;
     default:
     {
-        config.crc32 = UNKNOWN;
+        config.crc32 = elf_crc;
     }
     break;
     }

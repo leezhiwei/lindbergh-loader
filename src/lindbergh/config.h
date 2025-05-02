@@ -23,6 +23,7 @@
 #define INITIALD_4_REVB 0x606914be                           // DVP-0019B
 #define INITIALD_4_REVC 0x50f1c269                           // DVP-0019C
 #define INITIALD_4_REVD 0xba380f8a                           // DVP-0019D
+#define INITIALD_4_REVD_SERVERBOX 0x678f4320                 // DVP-0019D
 #define INITIALD_4_REVG 0x6cb19701                           // DVP-0019G
 #define INITIALD_4_EXP_REVB 0xd0c64f3                        // DVP-0030B
 #define INITIALD_4_EXP_REVC 0x65ea22e3                       // DVP-0030C

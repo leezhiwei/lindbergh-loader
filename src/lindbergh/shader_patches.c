@@ -624,6 +624,7 @@ bool shaderFileInList(const char *pathname, int *idx)
     case INITIALD_4_REVB:
     case INITIALD_4_REVC:
     case INITIALD_4_REVD:
+    case INITIALD_4_REVD_SERVERBOX:
     case INITIALD_4_REVG:
     case INITIALD_5_JAP_REVA:
     case INITIALD_5_JAP_REVF:

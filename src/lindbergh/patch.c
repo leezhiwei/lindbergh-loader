@@ -23,6 +23,7 @@
 #include "glxhooks.h"
 #include "log.h"
 #include "customcursor.h"
+#include "drawtext.h"
 
 extern uint32_t gId;
 char elfID[4];
@@ -196,6 +197,7 @@ int amDongleUserInfoEx(int a, int b, char *_arcadeContext)
     case INITIALD_4_REVB:
     case INITIALD_4_REVC:
     case INITIALD_4_REVD:
+    case INITIALD_4_REVD_SERVERBOX:   
     case INITIALD_4_REVG:
     case INITIALD_4_EXP_REVB:
     case INITIALD_4_EXP_REVC:
@@ -1261,6 +1263,64 @@ int initPatch()
         detourFunction(0x08257470, stubRetOne); // isExistNewerSource (forces shader recompilation)
     }
     break;
+case INITIALD_4_REVD_SERVERBOX:
+    {
+        if (config->showDebugMessages == 1)
+        {
+            setVariable(0x0834af58, 2);                      // amBackupDebugLevel
+            setVariable(0x0834af60, 2);                      // amCreditDebugLevel
+            setVariable(0x0834b1b8, 2);                      // amDipswDebugLevel
+            setVariable(0x0834b1bc, 2);                      // amDongleDebugLevel
+            setVariable(0x0834b1c0, 2);                      // amEepromDebugLevel
+            setVariable(0x0834b1c4, 2);                      // amHwmonitorDebugLevel
+            setVariable(0x0834b1c8, 2);                      // amJvsDebugLevel
+            setVariable(0x0834b1cc, 2);                      // amLibDebugLevel
+            setVariable(0x0834b1d0, 2);                      // amMiscDebugLevel
+            setVariable(0x0834b1d8, 2);                      // amSysDataDebugLevel
+            setVariable(0x0834b1e0, 2);                      // bcLibDebugLevel
+            setVariable(0x0834b1d4, 2);                      // amOsinfoDebugLevel
+            setVariable(0x0834b124, 0x0FFFFFFF);             // s_logMask
+            //detourFunction(0x0852add8, _putConsoleSeparate); // Debug Messages
+        }
+        // Security
+        detourFunction(0x080fc38a, amDongleInit);
+        detourFunction(0x080fadd5, amDongleIsAvailable);
+        detourFunction(0x080fb839, amDongleUpdate);
+        detourFunction(0x080fc251, amDongleUserInfoEx);
+        //memcpy(elfID, (void *)0x087929d8, 4); // Gets gameID from the ELF
+        //  Fixes
+        amDipswContextAddr = (void *)0x08352e88; // Address of amDipswContext
+        detourFunction(0x080fab68, amDipswInit);
+        detourFunction(0x080fabec, amDipswExit);
+        detourFunction(0x080fac61, amDipswGetData);
+        detourFunction(0x080facd8, amDipswSetLed); // amDipswSetLED
+
+        detourFunction(0x08078bcc, drawText); // Hook onto DemoDraw::DrawText
+
+        /*detourFunction(0x0821f5cc, stubRetOne); // isEthLinkUp
+        patchMemory(0x082cd3b2, "c0270900");    // tickInitStoreNetwork
+        patchMemory(0x082cd679, "e950010000");  // tickWaitDHCP
+        patchMemory(0x082cedf8, "EB");          // Skip Kickback initialization
+        patchMemory(0x087a024c, "f2");          // Skips initialization
+        patchMemory(0x087a025c, "6f");          // Skips initialization
+        setVariable(0x0855f519, 0x000126e9);    // Avoid Full Screen set from Game*/
+
+        /*if (GPUVendor != NVIDIA_GPU)
+        {
+            detourFunction(0x080789a4, gl_MultiTexCoord2fARB);
+            detourFunction(0x08078a14, gl_Color4ub);
+            detourFunction(0x08078c34, gl_Vertex3f);
+            detourFunction(0x08079354, gl_TexCoord2f);
+            detourFunction(0x080793f4, cg_GLIsProfileSupported);
+            patchMemory(0x0852a33a, "9090");
+            cacheModedShaderFiles();
+            detourFunction(0x08079894, gl_XGetProcAddressARB);
+            detourFunction(0x08079624, gl_ProgramParameters4fvNV);
+        }
+        patchMemory(0x0854ee03, "31C090");      // cgCreateProgram args argument to 0;
+        detourFunction(0x08257470, stubRetOne); // isExistNewerSource (forces shader recompilation)*/
+    }
+    break;
     case INITIALD_4_REVG:
     {
         if (config->showDebugMessages == 1)
@@ -1297,8 +1357,8 @@ int initPatch()
         patchMemory(0x082f4396, "c0270900");    // tickInitStoreNetwork
         patchMemory(0x082f4efb, "e94d010000");  // tickWaitDHCP
         patchMemory(0x082f6d5b, "EB");          // Skip Kickback initialization
-        patchMemory(0x087e9eac, "c2");          // Skips initialization
-        patchMemory(0x087e9ebc, "3f36");        // Skips initialization
+        //patchMemory(0x087e9eac, "c2");          // Skips initialization
+        //patchMemory(0x087e9ebc, "3f36");        // Skips initialization
         setVariable(0x08599819, 0x000126e9);    // Avoid Full Screen set from Game
 
         if (GPUVendor != NVIDIA_GPU)

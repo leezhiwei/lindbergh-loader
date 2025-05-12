@@ -37,7 +37,7 @@ void drawText(demoDraw_Context* context, int posX, int posY, unsigned int color,
         exit(1);
     }
 	if (!gRenderer){
-		printf("Initializing Renderer");
+		printf("Initializing Renderer\n");
 		gRenderer = SDL_CreateRenderer(SDLwindow, -1, SDL_RENDERER_ACCELERATED);
 		if (!gRenderer){
 			printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -45,7 +45,7 @@ void drawText(demoDraw_Context* context, int posX, int posY, unsigned int color,
 		}
 	}
 	if (!gFont){
-		printf("Initializing Font");
+		printf("Initializing Font\n");
 		gFont = TTF_OpenFont("/usr/share/fonts/dejavu/DejaVuSansMono.ttf", 11);
 		if (!gFont){
 			printf("Failed to load font! TTF Error: %s\n", TTF_GetError());
@@ -72,7 +72,7 @@ void drawText(demoDraw_Context* context, int posX, int posY, unsigned int color,
         printf("Failed to render texture on SDL2! SDL Error: %s\n", SDL_GetError());
         exit(1);
     }
-
+    SDL_FreeSurface(textSurface); // Free surface after render
     SDL_DestroyTexture(textTexture); // Destroy the texture after rendering
     return;
 }

@@ -24,6 +24,7 @@
 #include "log.h"
 #include "customcursor.h"
 #include "drawtext.h"
+#include "network.h"
 
 extern uint32_t gId;
 char elfID[4];
@@ -1287,6 +1288,7 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x080fadd5, amDongleIsAvailable);
         detourFunction(0x080fb839, amDongleUpdate);
         detourFunction(0x080fc251, amDongleUserInfoEx);
+        detourFunction(0x080fbd3e, stubRetOne); // amDongleDecryptEx
         //memcpy(elfID, (void *)0x087929d8, 4); // Gets gameID from the ELF
         //  Fixes
         amDipswContextAddr = (void *)0x08352e88; // Address of amDipswContext
@@ -1296,6 +1298,11 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x080facd8, amDipswSetLed); // amDipswSetLED
 
         detourFunction(0x08078bcc, drawText); // Hook onto DemoDraw::DrawText
+        detourFunction(0x081033ed, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
+        detourFunction(0x08103962, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
+        detourFunction(0x08102176, amOsinfoGetDhcpStatusEth0Ex); // 
+        detourFunction(0x0807f6de, stubRetOne); // is interface up?
+        detourFunction(0x0807f60c, getIPAddress); // got IP Address?
 
         /*detourFunction(0x0821f5cc, stubRetOne); // isEthLinkUp
         patchMemory(0x082cd3b2, "c0270900");    // tickInitStoreNetwork

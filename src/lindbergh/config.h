@@ -29,6 +29,7 @@
 #define INITIALD_4_EXP_REVC 0x65ea22e3                       // DVP-0030C
 #define INITIALD_4_EXP_REVD 0x62cc73a9                       // DVP-0030D
 #define INITIALD_5_JAP_REVA 0xb3183112                       // DVP-0070A
+#define INITIALD_5_JAP_REVA_SERVERBOX 0x5fd379cd             // DVP-0070A
 #define INITIALD_5_JAP_REVF 0xfc3dc85d                       // DVP-0070F
 #define INITIALD_5_EXP 0x701b88cf                            // DVP-0075
 #define INITIALD_5_EXP_20 0x77c6b58b                         // DVP-0084

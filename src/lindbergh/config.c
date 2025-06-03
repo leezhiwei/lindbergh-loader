@@ -484,6 +484,21 @@ static int detectGame(uint32_t elf_crc)
     }
     break;
 
+    case INITIALD_5_JAP_REVA_SERVERBOX:
+    {
+        config.gameTitle = "Initial D Arcade Stage 5 Rev A (Server Box)";
+        config.gameID = "SBQZ";
+        config.gameDVP = "DVP-0070A";
+        config.gameReleaseYear = "2009";
+        config.gameNativeResolutions = "640x480";
+        config.gameStatus = WORKING;
+        config.gameType = DRIVING;
+        config.width = 640;
+        config.height = 480;
+        return 0;
+    }
+    break;
+
     case INITIALD_5_JAP_REVF:
     {
         config.gameTitle = "Initial D Arcade Stage 5 Rev F";

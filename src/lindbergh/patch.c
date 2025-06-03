@@ -1612,17 +1612,18 @@ int initPatch()
         detourFunction(0x0890f9b8, amDipswInit);
         detourFunction(0x0890fa3c, amDipswExit);
         detourFunction(0x0890fab1, amDipswGetData);
-        detourFunction(0x0890fb28, amDipswSetLed); // amDipswSetLed
-        detourFunction(0x08321968, stubRetOne);    // isEthLinkUp
-        patchMemory(0x0843f068, "c0270900");       // tickInitStoreNetwork
-        // patchMemory(0x0843fed0, "e98d000000");  // tickWaitDHCP
-        detourFunction(0x08307b62, stubRetOne);  // Skip Kickback initialization
-        detourFunction(0x084de0dc, stubRetZero); // doesNeedRollerCleaning
-        detourFunction(0x084de0f8, stubRetZero); // doesNeedStockerCleaning
+        detourFunction(0x0890fb28, amDipswSetLed);  // amDipswSetLed
+        detourFunction(0x08321968, stubRetOne);     // isEthLinkUp
+        patchMemory(0x0843f068, "c0270900");        // tickInitStoreNetwork
+        patchMemory(0x0843fed0, "e98d000000");      // tickWaitDHCP
+        detourFunction(0x08307b62, stubRetOne);     // Skip Kickback initialization
+        detourFunction(0x084de0dc, stubRetZero);    // doesNeedRollerCleaning
+        detourFunction(0x084de0f8, stubRetZero);    // doesNeedStockerCleaning
         // patchMemory(0x089e308c, "BA");           // Skips initialization
-        patchMemory(0x08788e59, "e92601000090"); // Prevents Full Screen set from the game
+        patchMemory(0x08788e59, "e92601000090");    // Prevents Full Screen set from the game
 
-        patchMemory(0x08441f99, "eb60"); // tickInitAddress
+        patchMemory(0x08441f99, "eb60");            // tickInitAddress
+		patchMemory(0x08332AD4, "30302E30");        // 192.168.37.0/24 -> 192.168.00.0/24
 
         // Mesa Patches
         if (GPUVendor != NVIDIA_GPU)
@@ -1675,11 +1676,6 @@ int initPatch()
         detourFunction(0x080fbd3c, amDipswSetLed); // amDipswSetLED
 
         detourFunction(0x08078e3c, drawText);                   // Hook onto DemoDraw::DrawTextA
-        //detourFunction(0x08104449, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
-        //detourFunction(0x081049be, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
-        //detourFunction(0x081031d2, amOsinfoGetDhcpStatusEth0Ex);// 
-        //detourFunction(0x0807faae, stubRetOne);                 // is interface up?
-        //detourFunction(0x0807f9dc, getIPAddress);               // got IP Address?
         detourFunction(0x08114034, stubRetThree);               // altrServer()
         patchMemory(0x0807fe5a, "e9e9000000");                  // Skip network setup
     }

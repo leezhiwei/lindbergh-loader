@@ -2384,6 +2384,65 @@ int initResolutionPatches()
         }
     }
     break;
+    case INITIALD_5_JAP_REVA_SERVERBOX:
+    {
+        bool origRes = (gWidth == 640 && gHeight == 480);
+        if (!getConfig()->boostRenderRes && origRes)
+        {
+            break;
+        }
+        if (gWidth >= 1360 && gHeight >= 768)
+        {
+            patchMemory(0x083557f4, "bb01000000eb6b"); // Prevents renrer.ini from loading
+            setVariable(0x083556d0, gWidth);           // Framebuffer Main Width
+            setVariable(0x083556d7, gHeight);          // Framebuffer Main Height
+            setVariable(0x08355771, 256);              // Framebuffer Road Specular width
+            setVariable(0x08355778, 256);              // Framebuffer Road Specular height
+            setVariable(0x08355797, gWidth);           // Framebuffer Glare Width
+            setVariable(0x0835579e, gHeight);          // Framebuffer Glare Height
+            setVariable(0x083557c4, gWidth >> 2);      // Framebuffer Reduced width
+            patchMemory(0x083557e9, "00000001");       // Enable Cube Secular
+            if (origRes)
+                break;
+        }
+        patchMemory(0x0853ccdd, "E9f000"); // Accept different Resolutions
+        setVariable(0x0853cdd3, gWidth);   // Set ResX
+        setVariable(0x0853cdd8, gHeight);  // Set ResY
+
+        // Fix Press start and Insert coins text
+        idDisplayTextureCAVEAddress = (void *)0x084e1770 + 5;
+        detourFunction(0x084e1770, idDisplayTexture);
+        // setViewport for track selection screen
+        setVariable(0x08214b9e, (int)(gHeight * (112.0 / 768)));
+        setVariable(0x08214ba6, (int)(gWidth * (724.0 / 1315)));
+        setVariable(0x08214bae, (int)(gHeight * (592.0 / 768)));
+        setVariable(0x08214bb6, (int)(gWidth * (962.0 / 1315)));
+        setVariable(0x08214bbe, gHeight);
+        // FSAA
+        patchMemory(0x08759eb6, "9090");
+        patchMemory(0x08787d59, "01"); // FSAA Enabled
+        setVariable(0x08cac028, 1);    // FSAA Quality
+        // Ballon fix
+        idDrawBallonCAVEAddress = (void *)0x082526a6 + 6;
+        iddrawBallonPutAddress = (void *)0x086d198c;
+        detourFunction(0x082526a6, idDrawBallon);
+        replaceCallAtAddress(0x08253b48, idBalloonPut);
+        replaceCallAtAddress(0x08253c09, idBalloonPut);
+        // START and VIEW CHANGE Text fix
+        float explanationScaleX = gWidth - (1360.0 - 815.0);
+        float explanationScaleY = (gHeight / 768.0) * 680.0;
+        setVariable(0x08269c25, *(unsigned int *)&explanationScaleY);
+        setVariable(0x08269c9d, *(unsigned int *)&explanationScaleX);
+        // Scale Testmode text
+        if (isTestMode() && gWidth >= 1920)
+        {
+            patchMemory(0x08c55b80, "02");
+            idTextShift = (gWidth == 1920 ? 27 : ((1920 / gWidth) * 27) + 2);
+            idTestTextAddress = (void *)0x0877502c;
+            replaceCallAtAddress(0x0850783e, idTestText);
+        }
+    }
+    break;
     case INITIALD_5_JAP_REVF: // ID5 - DVP-0070F
     {
         bool origRes = (gWidth == 1360 && gHeight == 768);

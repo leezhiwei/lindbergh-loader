@@ -154,6 +154,11 @@ int stubRetOne()
     return 1;
 }
 
+int stubRetThree()
+{
+    return 3;
+}
+
 int stubRetMinusOne()
 {
     return -1;
@@ -204,6 +209,9 @@ int amDongleUserInfoEx(int a, int b, char *_arcadeContext)
     case INITIALD_4_EXP_REVC:
     case INITIALD_4_EXP_REVD:
     case INITIALD_5_JAP_REVA:
+    case INITIALD_5_JAP_REVA_SERVERBOX:
+        memcpy(_arcadeContext, "SBQZ", 4);
+        break;
     case INITIALD_5_JAP_REVF:
     case INITIALD_5_EXP:
     case INITIALD_5_EXP_20:
@@ -1264,7 +1272,7 @@ int initPatch()
         detourFunction(0x08257470, stubRetOne); // isExistNewerSource (forces shader recompilation)
     }
     break;
-case INITIALD_4_REVD_SERVERBOX:
+    case INITIALD_4_REVD_SERVERBOX:
     {
         if (config->showDebugMessages == 1)
         {
@@ -1289,6 +1297,7 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x080fb839, amDongleUpdate);
         detourFunction(0x080fc251, amDongleUserInfoEx);
         detourFunction(0x080fbd3e, stubRetOne); // amDongleDecryptEx
+        detourFunction(0x0810240e, stubRetZero); // SetIpAddressEth0Ex
         //memcpy(elfID, (void *)0x087929d8, 4); // Gets gameID from the ELF
         //  Fixes
         amDipswContextAddr = (void *)0x08352e88; // Address of amDipswContext
@@ -1298,8 +1307,8 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x080facd8, amDipswSetLed); // amDipswSetLED
 
         detourFunction(0x08078bcc, drawText); // Hook onto DemoDraw::DrawText
-        detourFunction(0x081033ed, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
-        detourFunction(0x08103962, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
+        //detourFunction(0x081033ed, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
+        //detourFunction(0x08103962, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
         detourFunction(0x08102176, amOsinfoGetDhcpStatusEth0Ex); // 
         detourFunction(0x0807f6de, stubRetOne); // is interface up?
         detourFunction(0x0807f60c, getIPAddress); // got IP Address?
@@ -1610,7 +1619,7 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x08307b62, stubRetOne);  // Skip Kickback initialization
         detourFunction(0x084de0dc, stubRetZero); // doesNeedRollerCleaning
         detourFunction(0x084de0f8, stubRetZero); // doesNeedStockerCleaning
-        patchMemory(0x089e308c, "BA");           // Skips initialization
+        // patchMemory(0x089e308c, "BA");           // Skips initialization
         patchMemory(0x08788e59, "e92601000090"); // Prevents Full Screen set from the game
 
         patchMemory(0x08441f99, "eb60"); // tickInitAddress
@@ -1630,6 +1639,49 @@ case INITIALD_4_REVD_SERVERBOX:
         detourFunction(0x08388cb4, stubRetOne); // isExistNewerSource
         detourFunction(0x0807b370, gl_XGetProcAddressARB);
         patchMemory(0x0874433e, "00"); // Fix cutscenes
+    }
+    break;
+    case INITIALD_5_JAP_REVA_SERVERBOX:
+    {
+        if (config->showDebugMessages == 1)
+        {
+            setVariable(0x083b3bb8, 2);                      // amBackupDebugLevel
+            setVariable(0x083b3bc0, 2);                      // amCreditDebugLevel
+            setVariable(0x083b3e18, 2);                      // amDipswDebugLevel
+            setVariable(0x083b3e1c, 2);                      // amDongleDebugLevel
+            setVariable(0x083b3e20, 2);                      // amEepromDebugLevel
+            setVariable(0x083b3e24, 2);                      // amHwmonitorDebugLevel
+            setVariable(0x083b3e28, 2);                      // amJvsDebugLevel
+            setVariable(0x083b3e2c, 2);                      // amLibDebugLevel
+            setVariable(0x083b3e30, 2);                      // amMiscDebugLevel
+            setVariable(0x083b3e38, 2);                      // amSysDataDebugLevel
+            setVariable(0x083b3e40, 2);                      // bcLibDebugLevel
+            setVariable(0x083b3e34, 2);                      // amOsinfoDebugLevel
+            setVariable(0x083b3e44, 0x0FFFFFFF);             // s_logMask
+            //detourFunction(0x0852add8, _putConsoleSeparate); // Debug Messages
+        }
+        // Security
+        detourFunction(0x080fd3ee, amDongleInit);
+        detourFunction(0x080fbe39, amDongleIsAvailable);
+        detourFunction(0x080fc89d, amDongleUpdate);
+        detourFunction(0x080fd2b5, amDongleUserInfoEx);
+        detourFunction(0x080fcda2, stubRetOne); // amDongleDecryptEx
+        //memcpy(elfID, (void *)0x087929d8, 4); // Gets gameID from the ELF
+        //  Fixes
+        amDipswContextAddr = (void *)0x083bc4e8; // Address of amDipswContext
+        detourFunction(0x080fbbcc, amDipswInit);
+        detourFunction(0x080fbc50, amDipswExit);
+        detourFunction(0x080fbcc5, amDipswGetData);
+        detourFunction(0x080fbd3c, amDipswSetLed); // amDipswSetLED
+
+        detourFunction(0x08078e3c, drawText);                   // Hook onto DemoDraw::DrawTextA
+        //detourFunction(0x08104449, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
+        //detourFunction(0x081049be, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
+        //detourFunction(0x081031d2, amOsinfoGetDhcpStatusEth0Ex);// 
+        //detourFunction(0x0807faae, stubRetOne);                 // is interface up?
+        //detourFunction(0x0807f9dc, getIPAddress);               // got IP Address?
+        detourFunction(0x08114034, stubRetThree);               // altrServer()
+        patchMemory(0x0807fe5a, "e9e9000000");                  // Skip network setup
     }
     break;
     case INITIALD_5_JAP_REVF: // ID5 - DVP-0070F

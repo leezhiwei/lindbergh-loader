@@ -10,6 +10,8 @@
 #include <netinet/in.h>
 #include <net/if.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "drawtext.h"
 
@@ -131,4 +133,61 @@ uint amOsinfoGetDhcpStatusEth0Ex(unsigned int *param_1){
 bool getIPAddress(char *ifname, Sockaddr *saddr){
     printf("IP Address gotten for %s", ifname);
     return 1;
+}
+
+typedef struct {
+    int    h_addrtype;
+    char **h_addr_list;
+} HookHostEnt;
+
+int getHostByName(struct in_addr *param_1, const char *param_2)
+{
+    printf("Called getHostByName: %s \n", param_2);
+    if (strcmp(param_2, "tenporouter.loc") == 0 || strcmp(param_2, "bbrouter.loc") == 0)
+    {
+        struct in_addr fake_addr;
+        fake_addr.s_addr = htonl(0x0A0000FE);
+        printf("Returning fake addr: %s.\n", inet_ntoa(fake_addr));
+        param_1->s_addr = fake_addr.s_addr;
+        return 1;
+    }
+    
+    if (strcmp(param_2, "naominet.jp") == 0)
+    {
+        struct in_addr fake_addr;
+        fake_addr.s_addr = inet_addr("192.168.1.108");
+        printf("Returning fake addr: %s.\n", inet_ntoa(fake_addr));
+        param_1->s_addr = fake_addr.s_addr;
+        return 1;
+    }
+
+    char *buf = (char *)malloc(0x2000);
+    if (buf == NULL)
+    {
+        param_1->s_addr = 0;
+        return 0;
+    }
+
+    int retCode = 0;
+    int herrno = 0;
+    struct hostent hostbuf;
+    struct hostent *result = NULL;
+
+    param_1->s_addr = 0;
+
+    retCode = gethostbyname_r(param_2, &hostbuf, buf, 0x2000, &result, &herrno);
+
+    if (retCode == 0 && result != NULL)
+    {
+        if (hostbuf.h_addrtype == AF_INET && hostbuf.h_addr_list[0] != NULL)
+        {
+            param_1->s_addr = *(in_addr_t *)hostbuf.h_addr_list[0];
+            free(buf);
+            return 1;
+        }
+    }
+
+    free(buf);
+    param_1->s_addr = 0;
+    return 0;
 }

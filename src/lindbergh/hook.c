@@ -29,6 +29,7 @@
 #include <signal.h>
 #include <ifaddrs.h>
 #include <dirent.h>
+#include <net/if.h>
 
 #include "baseboard.h"
 #include "config.h"
@@ -1288,6 +1289,10 @@ int ioctl(int fd, unsigned int request, void *data)
 {
     int (*_ioctl)(int fd, int request, void *data) = dlsym(RTLD_NEXT, "ioctl");
 
+    char* setinterface = "wlan0";
+    struct stat statbuf;
+    fstat(fd, &statbuf);
+
     if (fd == hooks[EEPROM])
     {
         if (request == 0xC04064A0)
@@ -1308,6 +1313,17 @@ int ioctl(int fd, unsigned int request, void *data)
             memcpy(data, &d, sizeof(uint8_t));
         }
         return 0;
+    }
+
+    if (S_ISSOCK(statbuf.st_mode) == 1){
+        struct ifreq *ifr = (struct ifreq *)data;
+
+        // Patch the interface name in the ifr_name field
+        // Use strncpy to prevent buffer overflow and ensure null termination
+        strncpy(ifr->ifr_name, setinterface, IFNAMSIZ - 1);
+        //ifr->ifr_name[IFNAMSIZ - 1] = '\0'; // Ensure null terminati on
+
+        return _ioctl(fd, request, data); // call original function
     }
 
     return _ioctl(fd, request, data);

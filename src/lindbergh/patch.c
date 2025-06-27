@@ -203,7 +203,9 @@ int amDongleUserInfoEx(int a, int b, char *_arcadeContext)
     case INITIALD_4_REVB:
     case INITIALD_4_REVC:
     case INITIALD_4_REVD:
-    case INITIALD_4_REVD_SERVERBOX:   
+    case INITIALD_4_REVD_SERVERBOX:
+        memcpy(_arcadeContext, "SBML", 4);
+        break;   
     case INITIALD_4_REVG:
     case INITIALD_4_EXP_REVB:
     case INITIALD_4_EXP_REVC:
@@ -1297,7 +1299,7 @@ int initPatch()
         detourFunction(0x080fb839, amDongleUpdate);
         detourFunction(0x080fc251, amDongleUserInfoEx);
         detourFunction(0x080fbd3e, stubRetOne); // amDongleDecryptEx
-        detourFunction(0x0810240e, stubRetZero); // SetIpAddressEth0Ex
+        //detourFunction(0x0810240e, stubRetZero); // SetIpAddressEth0Ex
         //memcpy(elfID, (void *)0x087929d8, 4); // Gets gameID from the ELF
         //  Fixes
         amDipswContextAddr = (void *)0x08352e88; // Address of amDipswContext
@@ -1309,9 +1311,10 @@ int initPatch()
         detourFunction(0x08078bcc, drawText); // Hook onto DemoDraw::DrawText
         //detourFunction(0x081033ed, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkPropertyEth0
         //detourFunction(0x08103962, amOsinfoGetNetworkProperty); // amOsinfoGetNetworkProperty
-        detourFunction(0x08102176, amOsinfoGetDhcpStatusEth0Ex); // 
-        detourFunction(0x0807f6de, stubRetOne); // is interface up?
-        detourFunction(0x0807f60c, getIPAddress); // got IP Address?
+        //detourFunction(0x08102176, amOsinfoGetDhcpStatusEth0Ex); // 
+        //detourFunction(0x0807f6de, stubRetOne); // is interface up?
+        //detourFunction(0x0807f60c, getIPAddress); // got IP Address?
+        //patchMemory(0x0807fa1b, "e93b020000"); // skip network check
 
         /*detourFunction(0x0821f5cc, stubRetOne); // isEthLinkUp
         patchMemory(0x082cd3b2, "c0270900");    // tickInitStoreNetwork
@@ -1677,6 +1680,7 @@ int initPatch()
 
         detourFunction(0x08078e3c, drawText);                   // Hook onto DemoDraw::DrawTextA
         detourFunction(0x08114034, stubRetThree);               // altrServer()
+        detourFunction(0x0807f74e, getHostByName);
         patchMemory(0x0807fe5a, "e9e9000000");                  // Skip network setup
     }
     break;
